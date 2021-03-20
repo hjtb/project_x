@@ -138,6 +138,7 @@ class Arduino_logger:
             if check_sum == packet["check_sum"]:
                 return True
             else:
+                print(f"Failed fidelity: {packet}")
                 return False
         except:
             return False
@@ -147,21 +148,21 @@ class Arduino_logger:
         # if we get a wild reading then it should be ignored 
         # Create a rolling average of the last 5 readings and if this is 
         # greater than 30% different, reject????
-        threshold = 0.2
+        # threshold = 0.2
 
-        for key in packet:
+        # for key in packet:
 
-            value = packet[key]
+        #     value = packet[key]
 
-            try:
-                self.rolling_averages[key] = (self.rolling_average[key]*4 + value) / 5
-            except:
-                self.rolling_averages[key] = value
+        #     try:
+        #         self.rolling_averages[key] = (self.rolling_average[key]*4 + value) / 5
+        #     except:
+        #         self.rolling_averages[key] = value
 
-            delta_from_average = abs(self.rolling_averages[key] - value)
+        #     delta_from_average = abs(self.rolling_averages[key] - value)
 
-            if delta_from_average / self.rolling_averages[key] > threshold:
-                return False
+        #     if delta_from_average / self.rolling_averages[key] > threshold:
+        #         return False
 
         return True
 
