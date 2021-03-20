@@ -23,6 +23,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY')
     THIS_MACHINE = os.environ.get('THIS_MACHINE')
     FLASK_ENV = os.environ.get('FLASK_ENV')
+    SERIAL_PORT = os.environ.get('SERIAL_PORT')
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))
     database_password = os.environ.get('database_password')
     # And the dependant on environment variables
