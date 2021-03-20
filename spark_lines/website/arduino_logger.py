@@ -66,7 +66,7 @@ class Arduino_logger:
 
     def start_reading_log_threaded(self, interval_in_seconds=1, type="random"):
         # Enter the correct port for the arduino
-        port = "com4"
+        # port = "com3"
 
         # Set the baud rate correctly to match the rate set in the arduino
         arduino = serial.Serial(self.serial_port, self.baud_rate, timeout=5)

@@ -20,11 +20,18 @@ import random
 
 from website import Spark_lines
 
+# Import the Flask webapp instance that we created in the __init__.py
+from flask import current_app as app
+from website import db
+
 spark_lines = Spark_lines("test")
 
 from website import Arduino_logger
 
-arduino_logger = Arduino_logger("test", serial_port="COM4", baud_rate=115200)
+
+serial_port = app.config.get("SERIAL_PORT")
+
+arduino_logger = Arduino_logger("test", serial_port=serial_port, baud_rate=115200)
 
 
 name = "spark_1"
@@ -63,11 +70,6 @@ for name in names:
 
 interval_in_seconds = refresh_milliseconds / 1000
 spark_lines.generate_fake_stream(interval_in_seconds)
-
-
-# Import the Flask webapp instance that we created in the __init__.py
-from flask import current_app as app
-from website import db
 
 
 # Define our first route (the last part of the url for our website application)

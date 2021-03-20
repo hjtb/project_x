@@ -1,5 +1,7 @@
-.vscode
-
+# My excludes
+.vscode/
+.env
+output_no_git/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
