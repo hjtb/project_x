@@ -146,7 +146,20 @@ def get_arduino_data():
     data = arduino_logger.get_n_packets(number_of_packets)
 
     return jsonify(data)
+# Define our first route (the last part of the url for our website application)
+# We can define what urls should land in this function. Let's say / and /index
+# We can also define the legitimate methods for this page of GET and POST
+@app.route("/canvas")
+def canvas():
 
+    point_1 = 300
+    point_2 = 400
+    point_3 = 600
+
+    # Use Jinja to render the HTML and resolve any variables that we pass in
+    rendered_html = render_template("canvas.html", point_1=point_1, point_2=point_2, point_3=point_3)
+
+    return rendered_html
 
 # Now we can define a page to handle 404 errors
 # 404 errors occur when we try to visit a page for

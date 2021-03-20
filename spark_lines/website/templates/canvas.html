@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
+        crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Draw a few lines on the canvas</h1>
+    </div>
+
+    <canvas id="canvas_spark_1" width="800" height="800" style="border:1px solid #000000;">
+        <script>
+
+            var c = document.getElementById("canvas_spark_1");
+            var context = c.getContext("2d");
+            context.lineWidth = 1;
+
+            sprites = [];
+
+            for (var sprite_counter = 0; sprite_counter < 20; sprite_counter = sprite_counter + 1) {
+                sprite = {};
+                sprite["x_mover"] = Math.random();
+                sprite["y_mover"] = Math.random();
+                sprite["x_side"] = Math.random() * 200;
+                sprite["y_side"] = Math.random() * 200;
+                sprite["x_point"] = Math.random() * (800 - sprite["x_side"]);
+                sprite["y_point"] = Math.random() * (800 - sprite["y_side"]);
+                var rgb_1  = Math.round(Math.random() * 256);
+                    rgb_2  = Math.round(Math.random() * 256);
+                    rgb_3  = Math.round(Math.random() * 256);
+                sprite["colour"] = "rgb" +"(" + String(rgb_1) +","+ String(rgb_2) +","+ String(rgb_3) + ")";
+                sprites.push(sprite);
+                console.log(sprite["colour"]);
+            }
+
+            function draw_rectangle() {
+                context.beginPath();
+                context.rect(0, 0, 800, 800);
+                context.fillStyle = "rgb(114, 113, 114)";
+                context.fill();
+
+                for (var sprite_counter = 0; sprite_counter < 20; sprite_counter = sprite_counter + 1) {
+                    sprite = sprites[sprite_counter];
+                    x_point = sprite["x_point"];
+                    y_point = sprite["y_point"];
+                    x_mover = sprite["x_mover"];
+                    y_mover = sprite["y_mover"];
+                    x_side = sprite["x_side"];
+                    y_side = sprite["y_side"];
+                    sprite_colour = sprite["colour"]
+
+                    if (sprite_counter > 0) {
+                        previous_sprite = sprites[sprite_counter - 1];
+                        context.beginPath();
+                        context.fillStyle = "rgb(204, 253, 24)";
+                        context.moveTo(previous_sprite["x_point"], previous_sprite["y_point"]);
+                        context.lineTo(x_point, y_point);
+                        context.fill();
+                        context.stroke();
+
+                    }
+
+                    context.beginPath();
+                    context.rect(x_point, y_point, x_side, y_side);
+                    context.fillStyle = sprite_colour;
+                    context.fill();
+
+                    x_point = x_point + x_mover;
+                    y_point = y_point + y_mover;
+
+                    if (x_point >= 800 - x_side || x_point <= 0) {
+                        sprite["x_mover"] = -x_mover;
+                    }
+                    if (y_point >= 800 - y_side || y_point <= 0) {
+                        sprite["y_mover"] = -y_mover;
+                    }
+                    sprite["x_point"] = x_point;
+                    sprite["y_point"] = y_point;
+                }
+
+
+                context.stroke();
+
+
+                setTimeout(draw_rectangle, .5);
+
+                console.log(x_point, y_point);
+            }
+            draw_rectangle(0, 0);
+
+
+        </script>
+    </canvas>
+</body>
+</html>
