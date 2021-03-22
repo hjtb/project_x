@@ -146,9 +146,14 @@ class Arduino_logger:
     def filter_outliers(self, packet):
 
         # if we get a wild reading then it should be ignored 
-        # Create a rolling average of the last 5 readings and if this is 
-        # greater than 30% different, reject????
-        # threshold = 0.2
+        # It needs to be done in real time or very close to it 
+        """ 
+        Strategy:
+        
+
+        """
+        # 
+
 
         # for key in packet:
 
@@ -191,7 +196,6 @@ if __name__ == "__main__":
 
     while True:
 
-        
         print(arduino_Logger.get_n_packets(1))
         time.sleep(1)
 
