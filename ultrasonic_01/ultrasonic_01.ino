@@ -114,9 +114,6 @@ int get_distance(int echo_pin, int trigger_pin)
     // 1 every 60 milliseconds 
     // Therefor we store the millis in a global and wait here 
     // until that limit is reached 
-    while (millis() < timer_millis_for_throttle + 60){
-
-    }
 
     // but why 60 milliseconds?
     // sound is travelling at 340 meters per second 
@@ -124,6 +121,11 @@ int get_distance(int echo_pin, int trigger_pin)
     // or 340,000 mm per millisecond
     // in 60 milliseconds, it has travelled 20 meters 
     // The maximum distance we are interested in is c 1m
+    // Therefore, the delay that we should introduce is 60 / 20
+    // We can double it fore safety: 2 * 60 / 20
+    while (millis() < timer_millis_for_throttle + 6){
+
+    }
 
 
     // Clears the trigger_pin condition

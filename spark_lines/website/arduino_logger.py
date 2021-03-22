@@ -48,7 +48,8 @@ class Arduino_logger:
 
         self.start_reading_log()
 
-        # define a list to store the last n entries in 
+        # define a list to store the last n entries in
+
     def start_reading_log(self):
 
         # start reading the log
@@ -75,7 +76,7 @@ class Arduino_logger:
         start_token = "# start #"
         end_token = "# end #"
 
-        # time_between_readings 
+        # time_between_readings
         time_between_readings = 1000 * 1 / self.readings_per_second
 
         last_reading_stored_at = 0
@@ -100,15 +101,22 @@ class Arduino_logger:
 
                 if self.check_packet_fidelity(packet):
                     if self.filter_outliers(packet):
-                    # If this is the first reading that we've actually hit then set the previous
-                    # stored at to now - time between readings to force this one to be stored 
+                        # If this is the first reading that we've actually hit then set the previous
+                        # stored at to now - time between readings to force this one to be stored
                         if not last_reading_stored_at:
-                            last_reading_stored_at = packet["milliseconds"] - time_between_readings
+                            last_reading_stored_at = (
+                                packet["milliseconds"] - time_between_readings
+                            )
 
-                        # now check if it's time to store one 
-                        if packet["milliseconds"] - last_reading_stored_at >= time_between_readings:
+                        # now check if it's time to store one
+                        if (
+                            packet["milliseconds"] - last_reading_stored_at
+                            >= time_between_readings
+                        ):
                             # for now, let's print the data raw
-                            last_reading_stored_at = last_reading_stored_at + time_between_readings
+                            last_reading_stored_at = (
+                                last_reading_stored_at + time_between_readings
+                            )
 
                             self.store_packet(packet)
 
@@ -116,7 +124,7 @@ class Arduino_logger:
                         print(f"[ERROR] The packet is an outlier: {packet}")
                 else:
                     print(f"[ERROR] The packet is not valid: {packet}")
-                    
+
             except Exception as err:
                 print(err)
                 print(f"The json dedcode failed. The string was: {json_text}")
@@ -129,7 +137,7 @@ class Arduino_logger:
             # Ignore the first 10 packets to give the electronics time to settle down
             if packet["packet_id"] < 10:
                 return False
-        
+
             check_sum = -packet["check_sum"]
 
             for key, value in packet.items():
@@ -145,15 +153,14 @@ class Arduino_logger:
 
     def filter_outliers(self, packet):
 
-        # if we get a wild reading then it should be ignored 
-        # It needs to be done in real time or very close to it 
-        """ 
+        # if we get a wild reading then it should be ignored
+        # It needs to be done in real time or very close to it
+        """
         Strategy:
-        
+
 
         """
-        # 
-
+        #
 
         # for key in packet:
 
@@ -187,13 +194,22 @@ class Arduino_logger:
 
         return return_packets
 
-
     def get_logging_rate(self):
 
-        # get the corect number of packets from the end of the packets list
-        return_packets = self.packets[-number_of_readings:]
+        # get the time taken to collect all the packets that we store
+        elapsed_time = int(self.packets[-1]["milliseconds"]) - int(
+            self.packets[0]["milliseconds"]
+        )
 
-        return return_packets
+        # work out how many packets were stored in that time 
+        number_of_packets = int(self.packets[-1]["packet_id"]) - int(
+            self.packets[0]["packet_id"]
+        )
+
+        # calculate the packets per second to one place 
+        packets_per_second = round(1000 * number_of_packets / elapsed_time, 1)
+
+        return packets_per_second
 
 
 if __name__ == "__main__":
