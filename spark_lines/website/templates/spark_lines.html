@@ -16,19 +16,27 @@
     <div class="container">
 
         <h1>Dynamically refreshing spark lines with no page refresh</h1>
-
+        <p>This page demonstrates how to update a number of spark line graphs that are built using api calls to retrieve
+            data and then drawing the graph onto an <a
+                href="https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API" target="new">html canvas</a> with
+        a timed javascript function
+        <p>The javascript itself is produced by a jinja template and is driven by the number of spark graphs required
+        </p>
+        <p>It's part of a learning repo created with the team from dt-squad to consider how best to visualise results
+            from sensors in real time</p>
+            {% include 'links.html' %}
         <div class="row row-cols-2 row-cols-xs-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5">
 
             {% for spark_line in spark_lines.spark_lines_list %}
             {% set package = spark_line.get_jinja() %}
-            
-            <div class="card m-2" >
+
+            <div class="card m-2">
                 <div class="card-body">
                     <h5 class="card-title">Canvas {{ package.name }}</h5>
                     {{ package["canvas_tag"]|safe }}
 
-                    <p class="card-text">This spark line is generated with the spark_lines object 
-                        and the data stream is generated randomly. They are updated without a browser refresh 
+                    <p class="card-text">This spark line is generated with the spark_lines object
+                        and the data stream is generated randomly. They are updated without a browser refresh
                     </p>
                 </div>
 

@@ -14,55 +14,55 @@ class Spark_lines:
         self.spark_lines_list = []
         self.spark_lines_dict = {}
 
-    def add_spark_line(self, name, **kwargs):
+    def add_spark_line(self, spark_line_name, **kwargs):
 
         # Instantiate a sparkline and pass the kwargs through
-        spark_line = Spark_line(name, **kwargs)
+        spark_line = Spark_line(spark_line_name, **kwargs)
 
-        self.spark_lines_dict[name] = spark_line
+        self.spark_lines_dict[spark_line_name] = spark_line
         self.spark_lines_list.append(spark_line)
 
         return True
 
-    def add_data_point(self, name, data_point):
+    def add_data_point(self, spark_line_name, data_point):
 
         # get this spark line
-        spark_line = self.spark_lines_dict[name]
+        spark_line = self.spark_lines_dict[spark_line_name]
 
         spark_line.add_data_point(data_point)
 
         return True
 
-    def get_image(self, name):
+    def get_image(self, spark_line_name):
 
         # get this spark line
-        spark_line = self.spark_lines_dict[name]
+        spark_line = self.spark_lines_dict[spark_line_name]
 
         image = spark_line.get_image()
 
         return image
 
-    def get_data(self, name):
+    def get_data(self, spark_line_name):
 
         # get this spark line
-        spark_line = self.spark_lines_dict[name]
+        spark_line = self.spark_lines_dict[spark_line_name]
 
         return spark_line.data_points
 
-    def get_jinja(self, name):
+    def get_jinja(self, spark_line_name):
 
         # get this spark line
-        spark_line = self.spark_lines_dict[name]
+        spark_line = self.spark_lines_dict[spark_line_name]
 
         jinja = spark_line.get_jinja()
 
         return jinja
 
-    def generate_fake_stream(self, interval_in_seconds, name=None):
+    def generate_fake_stream(self, interval_in_seconds, spark_line_name=None):
 
         # start generating fake stream of random data
-        if name:
-            spark_line = self.spark_lines_dict[name]
+        if spark_line_name:
+            spark_line = self.spark_lines_dict[spark_line_name]
             spark_line.generate_fake_stream(interval_in_seconds)
         else:
             for spark_line in self.spark_lines_list:
@@ -72,7 +72,7 @@ class Spark_lines:
 class Spark_line:
     def __init__(
         self,
-        name,
+        spark_line_name,
         width=120,
         height=30,
         background_colour=(255, 255, 255),
@@ -87,7 +87,7 @@ class Spark_line:
         refresh_milliseconds=1000,
     ):
 
-        self.name = name
+        self.spark_line_name = spark_line_name
         self.width = width
         self.height = height
         self.background_colour = background_colour
@@ -189,7 +189,7 @@ class Spark_line:
         javascript = f"""
 
             <script>
-                var c = document.getElementById("canvas_{self.name}");
+                var c = document.getElementById("canvas_{self.spark_line_name}");
                 var context = c.getContext("2d");
                 context.lineWidth = 1;
 
@@ -204,26 +204,26 @@ class Spark_line:
                 var json_points = "[0.31, 0.29, 0.3, 0.35, 0.29, 0.85, 0.15, 0.3, 0.32, 0.32,0.31, 0.29, 0.3, 0.35, 0.29, 0.85, 0.15, 0.3, 0.32, 0.32,0.31, 0.29, 0.3, 0.35, 0.29, 0.85, 0.15, 0.3, 0.32, 0.32]"
                 var points = JSON.parse(json_points);
 
-                async function fetchAsync_{self.name} (url) {{
+                async function fetchAsync_{self.spark_line_name} (url) {{
                 let data = await (await fetch(url)).json();
                 return data;
                 }}
 
-                function get_data_{self.name}(){{
+                function get_data_{self.spark_line_name}(){{
                     // trigger async function
                     // log response or catch error of fetch promise
-                    url = 'http://127.0.0.1:5000/get_spark_data?name={self.name}'
-                    fetchAsync_{self.name}(url)
-                        .then(data => update_canvas_{self.name}(data))
+                    url = 'http://127.0.0.1:5000/get_spark_data?spark_line_name={self.spark_line_name}'
+                    fetchAsync_{self.spark_line_name}(url)
+                        .then(data => update_canvas_{self.spark_line_name}(data))
                         .catch(reason => console.log(reason.message))  
                 }}
 
                 // set the timer to repeat this function as required
-                // setInterval(function(){{ get_data_{self.name}(); }}, {self.refresh_milliseconds});
+                // setInterval(function(){{ get_data_{self.spark_line_name}(); }}, {self.refresh_milliseconds});
 
-                function update_canvas_{self.name}(data){{
+                function update_canvas_{self.spark_line_name}(data){{
 
-                    var c = document.getElementById("canvas_{self.name}");
+                    var c = document.getElementById("canvas_{self.spark_line_name}");
                     var context = c.getContext("2d");
                     context.lineWidth = 1;
 
@@ -270,23 +270,23 @@ class Spark_line:
                     context.stroke();
 
                     // set the timer to repeat this function as required
-                    setTimeout(function(){{ get_data_{self.name}(); }}, {self.refresh_milliseconds});
+                    setTimeout(function(){{ get_data_{self.spark_line_name}(); }}, {self.refresh_milliseconds});
 
                 }}
 
                 // set the timer to repeat this function as required
-                // setInterval(function(){{ get_data_{self.name}(); }},{self.refresh_milliseconds});
+                // setInterval(function(){{ get_data_{self.spark_line_name}(); }},{self.refresh_milliseconds});
 
                 // now start the function initially 
-                get_data_{self.name}();
+                get_data_{self.spark_line_name}();
                 
             </script> 
         """
-        canvas_tag = f'<canvas id="canvas_{self.name}"  style="width: 100%; object-fit: contain; border: {self.border_width}px solid rgb{self.border_colour}" width="{self.width}" height="{self.height}"></canvas>'
+        canvas_tag = f'<canvas id="canvas_{self.spark_line_name}"  style="width: 100%; object-fit: contain; border: {self.border_width}px solid rgb{self.border_colour}" width="{self.width}" height="{self.height}"></canvas>'
 
         package = dict(
             javascript=javascript,
-            name=self.name,
+            spark_line_name=self.spark_line_name,
             canvas_tag=canvas_tag,
         )
 
@@ -312,7 +312,7 @@ class Spark_line:
 
         if np.random.rand() < 0.2:
             type = "heartbeat"
-            self.name = f"{self.name}"
+            self.spark_line_name = f"{self.spark_line_name}"
 
         counter = 0
         while True:
@@ -338,7 +338,7 @@ if __name__ == "__main__":
 
     spark_lines = Spark_lines("test")
 
-    name = "spark 1"
+    spark_line_name = "spark 1"
 
     kwargs = dict(
         width=480,
@@ -352,15 +352,15 @@ if __name__ == "__main__":
         maximum_y=50,
     )
 
-    spark_lines.add_spark_line(name, **kwargs)
+    spark_lines.add_spark_line(spark_line_name, **kwargs)
 
     for data_point in range(30):
-        spark_lines.add_data_point(name, data_point)
+        spark_lines.add_data_point(spark_line_name, data_point)
 
     interval_in_seconds = 1
     spark_lines.generate_fake_stream(interval_in_seconds)
 
-    jinja = spark_lines.get_jinja(name)
+    jinja = spark_lines.get_jinja(spark_line_name)
 
     print(jinja)
 
@@ -369,7 +369,7 @@ if __name__ == "__main__":
 
         cv2.imwrite(
             os.path.join("output_no_git", f"spark_{counter}.png"),
-            spark_lines.get_image(name),
+            spark_lines.get_image(spark_line_name),
         )
         counter = counter + 1
 

@@ -17,22 +17,47 @@
 <body>
 
     <div class="container">
-        
+
         <h1>Visualising the Sensors</h1>
 
-        <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API" >Documentation for Canvas</a></p>
-        
-        
+        {% include 'links.html' %}
+
         <div class="card m-2">
             <div class="card-body">
                 <h5 class="card-title">Sensor Triangle</h5>
-                <canvas id="canvas_vallon_1_2" style="width: 100%; object-fit: contain; border: 1px solid rgb(64, 39, 18)"
-                width="500" height="250"></canvas>
-                
-                <p class="card-text">This is the triangulation of the  sensors. It goes red when 1 sensor is 20% higher than any other is greater than 20% </p>
+                <canvas id="canvas_vallon_1_2"
+                    style="width: 100%; object-fit: contain; border: 1px solid rgb(64, 39, 18)" width="500"
+                    height="250"></canvas>
+
+                <p class="card-text">This is the triangulation of the sensors. It goes red when 1 sensor is 20% higher
+                    than any other is greater than 20% </p>
+
+
+
+                <p class="card-text">This page shows the rough visualisation of three ultrasonic sensors.</p>
+                <p class="card-text">Three points are selected to represent the ground below each of the sensors. The
+                    locatations are:
+                <ul>
+
+                    <li>base_sensor_1<ul>
+                            <li>x = 100</li>
+                            <li>y = 10</li>
+                        </ul>
+                    </li>
+                    <li>base_sensor_2<ul>
+                            <li>x = 250</li>
+                            <li>y = 100</li>
+                        </ul>
+                    </li>
+                    <li>base_sensor_3<ul>
+                            <li>x = 400</li>
+                            <li>y = 10</li>
+                        </ul>
+                    </li>
+                </ul>
+                </p>
+                <p class="card-text">The distance sensed by each sensor is scaled to fit in the canvas and added to the y of the base sensor described above</p>
             </div>
-            
-            
         </div>
     </div>
 
@@ -51,21 +76,21 @@
         // use fixed json for the moment
         context.beginPath();
 
-        async function fetchAsync_spark_1 (url) {
-        let packets = await (await fetch(url)).json();
-        return packets;
+        async function fetchAsync_spark_1(url) {
+            let packets = await (await fetch(url)).json();
+            return packets;
         }
 
-        function get_vallon_data(){
+        function get_vallon_data() {
             // trigger async function
             // log response or catch error of fetch promise
             url = 'http://127.0.0.1:5000/get_arduino_data?number_of_packets=1'
             fetchAsync_spark_1(url)
                 .then(packets => update_vallon_1_2(packets))
-                .catch(reason => console.log(reason.message))  
+                .catch(reason => console.log(reason.message))
         }
 
-        function update_vallon_1_2(packets){
+        function update_vallon_1_2(packets) {
 
             packet = packets[0];
             console.log(packets)
@@ -77,7 +102,7 @@
             context.beginPath();
             context.rect(0, 0, 500, 250);
             context.fillStyle = "rgb(204, 246, 244)";
-            context.fill();                    
+            context.fill();
 
 
             var x_0 = 0;
@@ -86,8 +111,8 @@
             var y_1 = packet["distance_2"] / 300 * 250;
 
             // invert the ys as they are starting at top left going to bottom right
-            y_0 = 250 - y_0;            
-            y_1 = 250 - y_1; 
+            y_0 = 250 - y_0;
+            y_1 = 250 - y_1;
 
             // draw the horizontal line 
             // context.moveTo(x_0, y_0);
@@ -95,16 +120,16 @@
             // context.stroke();
 
             // calculate the new triangle method
-            
+
             var base_sensor_1_x = 100;
             var base_sensor_1_y = 10;
-            
+
             var base_sensor_2_x = 250;
             var base_sensor_2_y = 100;
-            
+
             var base_sensor_3_x = 400;
             var base_sensor_3_y = 10;
-            
+
             var y_1 = base_sensor_1_y + packet["distance_1"] / 300 * 250;
             var y_2 = base_sensor_2_y + packet["distance_2"] / 300 * 250;
             var y_3 = base_sensor_3_y + packet["distance_3"] / 300 * 250;
@@ -114,36 +139,36 @@
             y_3 = 250 - y_3;
 
             context.fillStyle = 'teal';
-            
+
             var amber_threshold = 100000;
-            if (packet["distance_1"] / packet["distance_2"] > amber_threshold){context.fillStyle = 'orange';}
-            if (packet["distance_2"] / packet["distance_1"] > amber_threshold){context.fillStyle = 'orange';}
+            if (packet["distance_1"] / packet["distance_2"] > amber_threshold) { context.fillStyle = 'orange'; }
+            if (packet["distance_2"] / packet["distance_1"] > amber_threshold) { context.fillStyle = 'orange'; }
 
-            if (packet["distance_2"] / packet["distance_3"] > amber_threshold){context.fillStyle = 'orange';}
-            if (packet["distance_3"] / packet["distance_2"] > amber_threshold){context.fillStyle = 'orange';}
+            if (packet["distance_2"] / packet["distance_3"] > amber_threshold) { context.fillStyle = 'orange'; }
+            if (packet["distance_3"] / packet["distance_2"] > amber_threshold) { context.fillStyle = 'orange'; }
 
-            if (packet["distance_1"] / packet["distance_3"] > amber_threshold){context.fillStyle = 'orange';}
-            if (packet["distance_3"] / packet["distance_1"] > amber_threshold){context.fillStyle = 'orange';}
-            
+            if (packet["distance_1"] / packet["distance_3"] > amber_threshold) { context.fillStyle = 'orange'; }
+            if (packet["distance_3"] / packet["distance_1"] > amber_threshold) { context.fillStyle = 'orange'; }
+
             var red_threshold = 10000;
-            if (packet["distance_1"] / packet["distance_2"] > red_threshold){context.fillStyle = 'red';}
-            if (packet["distance_2"] / packet["distance_1"] > red_threshold){context.fillStyle = 'red';}
-            
-            if (packet["distance_2"] / packet["distance_3"] > red_threshold){context.fillStyle = 'red';}
-            if (packet["distance_3"] / packet["distance_2"] > red_threshold){context.fillStyle = 'red';}
-            
-            if (packet["distance_1"] / packet["distance_3"] > red_threshold){context.fillStyle = 'red';}
-            if (packet["distance_3"] / packet["distance_1"] > red_threshold){context.fillStyle = 'red';}
+            if (packet["distance_1"] / packet["distance_2"] > red_threshold) { context.fillStyle = 'red'; }
+            if (packet["distance_2"] / packet["distance_1"] > red_threshold) { context.fillStyle = 'red'; }
+
+            if (packet["distance_2"] / packet["distance_3"] > red_threshold) { context.fillStyle = 'red'; }
+            if (packet["distance_3"] / packet["distance_2"] > red_threshold) { context.fillStyle = 'red'; }
+
+            if (packet["distance_1"] / packet["distance_3"] > red_threshold) { context.fillStyle = 'red'; }
+            if (packet["distance_3"] / packet["distance_1"] > red_threshold) { context.fillStyle = 'red'; }
 
             context.beginPath();
             context.moveTo(base_sensor_1_x, y_1);
             context.lineTo(base_sensor_2_x, y_2);
             context.lineTo(base_sensor_3_x, y_3);
             context.fill();
-            
-            
+
+
             // set the timer to repeat this function as required
-            setTimeout(function(){ get_vallon_data(); }, 50);
+            setTimeout(function () { get_vallon_data(); }, 50);
 
         }
 
@@ -152,6 +177,6 @@
 
         // now start the function initially 
         get_vallon_data();
-        
-    </script>     
+
+    </script>
 </body>

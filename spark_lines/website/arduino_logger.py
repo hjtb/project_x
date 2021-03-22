@@ -26,16 +26,12 @@ class Arduino_logger:
         if not serial_port:
             # No, you must have a serial port to connect to
             print("[ERROR] You really must have a serial port")
-            1 / 0
-        else:
-            self.serial_port = serial_port
+        self.serial_port = serial_port
 
         if not baud_rate:
             # No, you must have a baud_rate
             print("[ERROR] You really must have a baud_rate")
-            1 / 0
-        else:
-            self.baud_rate = baud_rate
+        self.baud_rate = baud_rate
 
         self.start_token = start_token
         self.end_token = end_token
@@ -68,8 +64,12 @@ class Arduino_logger:
         # Enter the correct port for the arduino
         # port = "com3"
 
-        # Set the baud rate correctly to match the rate set in the arduino
-        arduino = serial.Serial(self.serial_port, self.baud_rate, timeout=5)
+        try:
+            # Set the baud rate correctly to match the rate set in the arduino
+            arduino = serial.Serial(self.serial_port, self.baud_rate, timeout=5)
+        except:
+            print("[ERROR] Catastrophic failure. Could not open the serial port")
+            return
 
         # Define the tokens for getting the numbers out of the mesages
         start_token = "# start #"
