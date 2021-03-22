@@ -58,7 +58,8 @@ void setup()
     pinMode(echo_pin_3, INPUT);
 
     // Set the Serial Communication baudrate speed
-    Serial.begin(115200);
+    // Serial.begin(115200);
+    Serial.begin(115200 * 2);
 
     // Print the initial log message
     Serial.println("Three Ultrasonic Sensors HC-SR04 Test v2");
@@ -116,6 +117,14 @@ int get_distance(int echo_pin, int trigger_pin)
     while (millis() < timer_millis_for_throttle + 60){
 
     }
+
+    // but why 60 milliseconds?
+    // sound is travelling at 340 meters per second 
+    // or 340,000,000 mm / second 
+    // or 340,000 mm per millisecond
+    // in 60 milliseconds, it has travelled 20 meters 
+    // The maximum distance we are interested in is c 1m
+
 
     // Clears the trigger_pin condition
     digitalWrite(trigger_pin, LOW);

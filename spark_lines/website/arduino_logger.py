@@ -188,6 +188,12 @@ class Arduino_logger:
         return return_packets
 
 
+    def get_logging_rate(self):
+
+        # get the corect number of packets from the end of the packets list
+        return_packets = self.packets[-number_of_readings:]
+
+        return return_packets
 
 
 if __name__ == "__main__":

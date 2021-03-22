@@ -30,7 +30,7 @@ spark_lines = Spark_lines("test")
 
 # Get the serial port from the app config
 serial_port = app.config.get("SERIAL_PORT")
-arduino_logger = Arduino_logger("test", serial_port=serial_port, baud_rate=115200)
+arduino_logger = Arduino_logger("test", serial_port=serial_port, baud_rate=2 * 115200)
 if not serial_port:
     print(
         "[WARNING] You must have an arduino connected with the ultrasonics and detectors if you want to visualise"
