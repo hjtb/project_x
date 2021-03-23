@@ -18,8 +18,11 @@
 #define echo_pin_3 6
 #define trigger_pin_3 7
 
-// variable for the timer
+// variable for the timer that is part of the packet
 long timer_millis;
+
+// variable for the timer to throttle the sensor readings
+long timer_millis_for_throttle;
 
 // variable for each of the distance_sensor measurements
 int distance_sensor_1;
@@ -32,6 +35,9 @@ long packet_id;
 
 void setup()
 {
+
+    // set the initial value of the millis for throttling
+    timer_millis_for_throttle = millis();
 
     // set the packet_id to zero
     packet_id = 0;
@@ -52,7 +58,8 @@ void setup()
     pinMode(echo_pin_3, INPUT);
 
     // Set the Serial Communication baudrate speed
-    Serial.begin(115200);
+    // Serial.begin(115200);
+    Serial.begin(115200 * 2);
 
     // Print the initial log message
     Serial.println("Three Ultrasonic Sensors HC-SR04 Test v2");
@@ -103,20 +110,43 @@ void loop()
 
 int get_distance(int echo_pin, int trigger_pin)
 {
+    // it is recommended to throttle the sensor readings to a max of 
+    // 1 every 60 milliseconds 
+    // Therefor we store the millis in a global and wait here 
+    // until that limit is reached 
+
+    // but why 60 milliseconds?
+    // sound is travelling at 340 meters per second 
+    // or 340,000,000 mm / second 
+    // or 340,000 mm per millisecond
+    // in 60 milliseconds, it has travelled 20 meters 
+    // The maximum distance we are interested in is c 1m
+    // Therefore, the delay that we should introduce is 60 / 20
+    // We can double it fore safety: 2 * 60 / 20
+    while (millis() < timer_millis_for_throttle + 6){
+
+    }
+
+
     // Clears the trigger_pin condition
     digitalWrite(trigger_pin, LOW);
     delayMicroseconds(2);
     // Sets the trigger_pin HIGH (ACTIVE) for 10 microseconds
+    // That in turn triggers 8 bursts of 40khz ultrasonic
+    // When the sensor detects an echo repsonse, it calculates 
+    // the length of time between the burst and the echo
+    // It then sets the echo pin high for the same duration
     digitalWrite(trigger_pin, HIGH);
     delayMicroseconds(10);
     digitalWrite(trigger_pin, LOW);
-    // Reads the echo_pin_1, returns the sound wave travel time in microseconds
+    // Reads the echo_pin, returns the sound wave travel time in microseconds
     int duration = pulseIn(echo_pin, HIGH);
     // Calculating the distance_sensor_1
     // Speed of sound wave divided by 2 (go and back)
     int distance_sensor = duration * 0.34 / 2;
 
-    // create a delay to stop the
-    delayMicroseconds(20);
+    // set the revised value of the millis for throttling next time
+    timer_millis_for_throttle = millis();
+
     return distance_sensor;
 }

@@ -24,17 +24,21 @@ from website import Spark_lines, Arduino_logger
 from flask import current_app as app
 from website import db
 
-spark_lines = Spark_lines("test")
-
-
-
 # Get the serial port from the app config
+# And create the logger object 
 serial_port = app.config.get("SERIAL_PORT")
-arduino_logger = Arduino_logger("test", serial_port=serial_port, baud_rate=115200)
+arduino_logger = Arduino_logger("test", serial_port=serial_port, baud_rate=2 * 115200)
 if not serial_port:
     print(
         "[WARNING] You must have an arduino connected with the ultrasonics and detectors if you want to visualise"
     )
+
+# Store the arduino logger inbto the loggers 
+loggers = {}
+loggers["arduino"] = arduino_logger
+
+# Create the spark lines object 
+spark_lines = Spark_lines("test")
 
 # Define an array of sparkline names
 # NB They must contain spaces!!!
@@ -148,10 +152,44 @@ def get_arduino_data():
     except:
         number_of_packets = 1
 
-    data = arduino_logger.get_n_packets(number_of_packets)
+    try:
+        logger_name = url_arguments["logger_name"][0]
+    except:
+        logger_name = "arduino"
+
+    logger = loggers[logger_name]
+
+    data = logger.get_n_packets(number_of_packets)
 
     return jsonify(data)
 
+@app.route("/get_logging_rate")
+def get_logging_rate():
+
+    # Get the url arguments if there are any
+    url_arguments = request.args.to_dict(flat=False)
+
+    try:
+        number_of_packets = int(url_arguments["number_of_packets"][0])
+    except:
+        number_of_packets = 1
+
+    try:
+        logger_name = url_arguments["logger_name"][0]
+    except:
+        print(f"[WARNING] no logger_name provided. Using arduino to prevent error")
+        logger_name = "arduino"
+
+    try:
+        logger = loggers[logger_name]
+    except:
+        print(f"[ERROR] Logger_name of: {logger_name} does not exist. Using arduino to prevent error")
+        logger_name = "arduino"
+
+
+    data = logger.get_logging_rate()
+
+    return jsonify(data)
 
 # Define our first route (the last part of the url for our website application)
 # We can define what urls should land in this function. Let's say / and /index
